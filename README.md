@@ -37,6 +37,8 @@ tests/                    게이트 규칙 회귀 테스트
 python tools/gate_check.py new G3 --lesson 수업명 --sender lesson-plan --receiver worksheets \
   --spec tmp/수업명/spec.md --spec-version v1
 python tools/gate_check.py check tmp/수업명/gates/<기록>.json   # 0 통과 · 10 조건부 · 20 반려
+python tools/gate_check.py verify --lesson 수업명 --through G4    # 기록 연쇄·명세 해시 확인
+python tools/gate_check.py docs --write                           # gates.json → docs 항목표 생성
 python -m unittest discover tests                                 # 규칙 테스트
 ```
 

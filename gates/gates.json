@@ -7,7 +7,8 @@
   "gates": {
     "G1": {
       "name": "조건 정리 → 아이디어 기획",
-      "sender": "coordinator",
+      "senders": ["coordinator"],
+      "judge_label": "아이디어 담당",
       "receivers": ["lesson-ideas"],
       "allow_conditional": true,
       "checks": [
@@ -19,7 +20,8 @@
     },
     "G2": {
       "name": "아이디어 선택 → 지도안 설계",
-      "sender": "lesson-ideas",
+      "senders": ["lesson-ideas"],
+      "judge_label": "지도안 담당",
       "receivers": ["lesson-plan"],
       "allow_conditional": true,
       "checks": [
@@ -32,10 +34,12 @@
     },
     "G3": {
       "name": "지도안 확정 → 자료 제작(활동지·슬라이드·평가)",
-      "sender": "lesson-plan",
+      "senders": ["lesson-plan"],
+      "judge_label": "활동지·슬라이드·평가 담당이 각각",
       "receivers": ["worksheets", "canva-slides", "formative-assessment"],
       "allow_conditional": false,
       "requires_user_confirmation": true,
+      "confirmation_check": "G3-01",
       "checks": [
         {"id": "G3-01", "level": "must", "title": "사용자 지도안 확인", "question": "목표·활동·시간·제미나이 활용 요약에 대한 사용자의 명시적 확인 기록이 있는가"},
         {"id": "G3-02", "level": "must", "title": "명세 동결", "question": "제작 기준 명세 파일의 버전과 SHA-256이 기록되고 현재 파일과 일치하는가"},
@@ -48,7 +52,9 @@
     },
     "G4": {
       "name": "자료 제작 → 통합 검토",
-      "sender": "worksheets|canva-slides|formative-assessment|lesson-plan",
+      "senders": ["worksheets", "canva-slides", "formative-assessment", "lesson-plan"],
+      "judge_label": "검토 담당",
+      "requires_inputs": true,
       "receivers": ["lesson-review"],
       "allow_conditional": true,
       "checks": [
@@ -61,7 +67,9 @@
     },
     "G5": {
       "name": "통합 검토 → 최종 전달",
-      "sender": "lesson-review",
+      "senders": ["lesson-review"],
+      "judge_label": "총괄",
+      "requires_inputs": true,
       "receivers": ["coordinator"],
       "allow_conditional": false,
       "checks": [
