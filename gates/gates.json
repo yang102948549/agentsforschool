@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "description": "핸드오프 게이트 정의. 사람이 읽는 설명은 docs/gates.md, 기계 검사는 tools/gate_check.py가 이 파일을 사용한다.",
+  "max_rejections_per_spec_version": 2,
+  "statuses": ["pass", "warning", "block", "not_assessed"],
+  "decisions": ["ready", "conditional_ready", "revision_required"],
+  "gates": {
+    "G1": {
+      "name": "조건 정리 → 아이디어 기획",
+      "sender": "coordinator",
+      "receivers": ["lesson-ideas"],
+      "allow_conditional": true,
+      "checks": [
+        {"id": "G1-01", "level": "must", "title": "기본 조건", "question": "학교급·과목·주제·차시·차시별 시간이 확인되었거나 가정으로 표시되었는가"},
+        {"id": "G1-02", "level": "must", "title": "확정·가정·미확인 구분", "question": "명세의 모든 조건이 확정/가정/미확인 중 하나로 표시되었는가"},
+        {"id": "G1-03", "level": "must", "title": "개인정보 배제", "question": "실명·학교명·명단·연락처 등 불필요한 식별정보가 명세와 검색어에 없는가"},
+        {"id": "G1-04", "level": "should", "title": "교재 상태", "question": "교재·지도서 PDF의 제공/미제공/대기/읽기 실패 상태가 기록되었는가"}
+      ]
+    },
+    "G2": {
+      "name": "아이디어 선택 → 지도안 설계",
+      "sender": "lesson-ideas",
+      "receivers": ["lesson-plan"],
+      "allow_conditional": true,
+      "checks": [
+        {"id": "G2-01", "level": "must", "title": "선택 근거", "question": "사용자의 아이디어 선택 또는 추천 위임이 기록되었는가(답변 부재는 선택이 아님)"},
+        {"id": "G2-02", "level": "must", "title": "교육적 목적과 학생 활동", "question": "선택안의 교육적 목적과 학생이 실제로 하는 활동이 명시되었는가"},
+        {"id": "G2-03", "level": "must", "title": "독립 출처", "question": "원문 URL·확인일이 있는 서로 독립된 출처가 2개 이상인가"},
+        {"id": "G2-04", "level": "must", "title": "제미나이 활용 조건", "question": "누가·어떤 기능을·무슨 목적으로 쓰는지와 대체 활동이 있는가"},
+        {"id": "G2-05", "level": "should", "title": "준비 조건", "question": "기기·계정·연령 등 미확인 준비 조건이 드러나 있는가"}
+      ]
+    },
+    "G3": {
+      "name": "지도안 확정 → 자료 제작(활동지·슬라이드·평가)",
+      "sender": "lesson-plan",
+      "receivers": ["worksheets", "canva-slides", "formative-assessment"],
+      "allow_conditional": false,
+      "requires_user_confirmation": true,
+      "checks": [
+        {"id": "G3-01", "level": "must", "title": "사용자 지도안 확인", "question": "목표·활동·시간·제미나이 활용 요약에 대한 사용자의 명시적 확인 기록이 있는가"},
+        {"id": "G3-02", "level": "must", "title": "명세 동결", "question": "제작 기준 명세 파일의 버전과 SHA-256이 기록되고 현재 파일과 일치하는가"},
+        {"id": "G3-03", "level": "must", "title": "목표–활동–평가 대응", "question": "모든 목표(O1…)에 최소 1개의 활동(L1-A1…)과 평가 방향이 연결되었는가"},
+        {"id": "G3-04", "level": "must", "title": "시간 합계", "question": "차시별 도입·전개·정리 시간 합이 차시 시간 이하이며 로그인·이동·배부 시간을 포함하는가"},
+        {"id": "G3-05", "level": "must", "title": "자료 대응표", "question": "활동 번호별로 필요한 활동지 문항·슬라이드·평가 문항이 지정되었는가"},
+        {"id": "G3-06", "level": "must", "title": "대체 활동", "question": "도구 이용 불가 시 같은 목표를 달성하는 대체 활동이 있는가"},
+        {"id": "G3-07", "level": "should", "title": "출처·권리", "question": "사용할 자료의 출처·이용 조건이 확인되었거나 미확인으로 표시되었는가"}
+      ]
+    },
+    "G4": {
+      "name": "자료 제작 → 통합 검토",
+      "sender": "worksheets|canva-slides|formative-assessment|lesson-plan",
+      "receivers": ["lesson-review"],
+      "allow_conditional": true,
+      "checks": [
+        {"id": "G4-01", "level": "must", "title": "산출물 실재", "question": "반환한 경로·Canva 링크가 실제로 열리고 내용이 있는가"},
+        {"id": "G4-02", "level": "must", "title": "명세 버전 일치", "question": "산출물이 G3에서 동결한 명세 버전·해시를 기준으로 만들어졌는가"},
+        {"id": "G4-03", "level": "must", "title": "학생용 정답 비노출", "question": "학생용 활동지·평가지·학생 화면 슬라이드에 정답·예시 답안이 없는가"},
+        {"id": "G4-04", "level": "must", "title": "전체 페이지 렌더링", "question": "모든 페이지를 렌더링해 한글·잘림·겹침을 확인한 기록이 있는가"},
+        {"id": "G4-05", "level": "should", "title": "작성자 자체 점검", "question": "작성 담당의 자체 점검표와 루브릭 버전이 함께 인계되었는가"}
+      ]
+    },
+    "G5": {
+      "name": "통합 검토 → 최종 전달",
+      "sender": "lesson-review",
+      "receivers": ["coordinator"],
+      "allow_conditional": false,
+      "checks": [
+        {"id": "G5-01", "level": "must", "title": "검토 독립성", "question": "검토자가 검토 대상 자료의 작성에 참여하지 않았는가"},
+        {"id": "G5-02", "level": "must", "title": "치명 지적 해소", "question": "정답 오류·개인정보 노출·자료 간 불일치·읽기 불가 배치 지적이 0건인가"},
+        {"id": "G5-03", "level": "must", "title": "자료별 판정", "question": "모든 필수 자료가 확인 완료이거나, 아니면 부분 완료로 명시되었는가"},
+        {"id": "G5-04", "level": "must", "title": "남은 확인 조건", "question": "사용자가 확인해야 할 미해결 조건 목록이 있는가"},
+        {"id": "G5-05", "level": "should", "title": "수정 한도", "question": "대표 페이지·전체 제작 단계의 수정 횟수가 각 3회 이내인가"}
+      ]
+    }
+  }
+}
