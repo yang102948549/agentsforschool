@@ -36,7 +36,7 @@
 | G1-01 | must | 학교급·과목·주제·차시·차시별 시간이 확인되었거나 가정으로 표시되었는가 |
 | G1-02 | must | 명세의 모든 조건이 확정/가정/미확인 중 하나로 표시되었는가 |
 | G1-03 | must | 실명·학교명·명단·연락처 등 불필요한 식별정보가 명세와 검색어에 없는가 |
-| G1-04 | should | 교재·지도서 PDF의 제공/미제공/대기/읽기 실패 상태가 기록되었는가 |
+| G1-04 | should | 교재·지도서 등 참고자료의 제공/미제공/대기/읽기 실패 상태가 기록되었는가 |
 
 ### G2 아이디어 선택 → 지도안 설계 (판정: 지도안 담당, 조건부 허용)
 | ID | 수준 | 점검 질문 |
@@ -85,15 +85,15 @@
 
 ```bash
 # 빈 기록 만들기(명세 해시 자동 기록)
-python tools/gate_check.py new G3 --lesson 정보화사회와도덕 --sender lesson-plan \
-  --receiver worksheets --spec tmp/정보화사회와도덕/spec.md --spec-version v3
+python tools/gate_check.py new G3 --lesson 예시수업 --sender lesson-plan \
+  --receiver worksheets --spec tmp/예시수업/spec.md --spec-version v3
 # 판정 작성 후 검사
-python tools/gate_check.py check tmp/정보화사회와도덕/gates/G3_lesson-plan_to_worksheets_20261014-101500.json
+python tools/gate_check.py check tmp/예시수업/gates/G3_lesson-plan_to_worksheets_20261014-101500.json
 # 반려 뒤 재검사 기록(반려 횟수 자동 계산)
-python tools/gate_check.py new G3 --lesson 정보화사회와도덕 --sender lesson-plan --receiver worksheets \
-  --spec tmp/정보화사회와도덕/spec.md --spec-version v3 --previous <직전 기록>.json
+python tools/gate_check.py new G3 --lesson 예시수업 --sender lesson-plan --receiver worksheets \
+  --spec tmp/예시수업/spec.md --spec-version v3 --previous <직전 기록>.json
 # 인계 전 기록 연쇄 확인: 필요한 기록이 있고 통과했으며 G3 동결 해시와 G4·G5 해시가 같은가
-python tools/gate_check.py verify --lesson 정보화사회와도덕 --through G4
+python tools/gate_check.py verify --lesson 예시수업 --through G4
 ```
 
 | 종료 코드 | 의미 | 총괄의 조치 |
