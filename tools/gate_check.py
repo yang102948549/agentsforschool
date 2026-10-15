@@ -6,7 +6,7 @@
       --receiver worksheets --spec tmp/<수업명>/spec.md --spec-version v3 \
       [--input 파일 ...] [--previous 직전기록.json]
   python tools/gate_check.py check tmp/<수업명>/gates/G3_lesson-plan_to_worksheets_20261014-101500.json
-  python tools/gate_check.py verify --lesson <수업명> --through G5 [--materials worksheets,canva-slides]
+  python tools/gate_check.py verify --lesson <수업명> --through G5 [--materials worksheets,canva-slides] [--skip G1,G2]
   python tools/gate_check.py docs [--write | --check]
   python tools/gate_check.py hash 파일 [파일 ...]
 
@@ -304,6 +304,13 @@ def cmd_verify(args) -> int:
     recs = latest_records(gdir, base, gates)
     upto = int(args.through[1])
     materials = args.materials.split(",") if args.materials else gates["gates"]["G3"]["receivers"]
+    skip = {s.strip() for s in (args.skip or "").split(",") if s.strip()}
+    bad = skip - set(gates["gates"])
+    if bad:
+        print(f"알 수 없는 게이트: {sorted(bad)}", file=sys.stderr)
+        return EXIT_INVALID
+    for g in sorted(skip):
+        print(f"{g}: 생략(통과 아님, 사용자 제공 자료 등 범위 사유를 전달 목록에 기록할 것)")
     problems: list[str] = []
 
     def need(gate_id, sender, receiver, accept=(0, 10)):
@@ -317,9 +324,9 @@ def cmd_verify(args) -> int:
         return r if r is not None and r["code"] in accept else None
 
     chosen: dict[str, dict] = {}
-    if upto >= 1:
+    if upto >= 1 and "G1" not in skip:
         chosen["G1"] = need("G1", "coordinator", "lesson-ideas")
-    if upto >= 2:
+    if upto >= 2 and "G2" not in skip:
         chosen["G2"] = need("G2", "lesson-ideas", "lesson-plan")
     g3 = {}
     if upto >= 3:
@@ -333,7 +340,7 @@ def cmd_verify(args) -> int:
     frozen = next(iter({(r["rec"]["spec"]["version"], r["rec"]["spec"]["sha256"]) for r in g3.values()}), None)
     g4 = {}
     if upto >= 4:
-        for sender in [*materials, "lesson-plan"]:
+        for sender in (materials if args.materials else [*materials, "lesson-plan"]):
             r = need("G4", sender, "lesson-review")
             if r:
                 g4[sender] = r
@@ -410,7 +417,8 @@ def main() -> int:
     v = sub.add_parser("verify", help="수업 하나의 게이트 기록 연쇄 확인")
     v.add_argument("--lesson", required=True)
     v.add_argument("--through", required=True, choices=["G1", "G2", "G3", "G4", "G5"])
-    v.add_argument("--materials", help="제작 대상 담당(쉼표). 기본: 활동지·슬라이드·평가 전부")
+    v.add_argument("--materials", help="제작 대상 담당(쉼표). 기본: 활동지·슬라이드·평가 전부. 지정하면 G4도 이 담당만 확인")
+    v.add_argument("--skip", help="생략할 게이트(쉼표, 예: G1,G2). 사용자 제공 지도안 등 범위 사유가 있을 때만")
     v.set_defaults(func=cmd_verify)
 
     d = sub.add_parser("docs", help="docs/gates.md의 항목표를 gates.json에서 생성")

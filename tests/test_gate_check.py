@@ -274,6 +274,17 @@ class VerifyTest(Base):
         # 일부 자료만 요청한 경우에는 해당 담당만 요구한다
         self.assertEqual(self.verify("G3", "--materials", "worksheets")[0], 0)
 
+    def test_partial_request_can_skip_g1_g2(self):
+        self.ready("G3", "lesson-plan", "worksheets")
+        self.ready("G4", "worksheets", "lesson-review")
+        self.ready("G5", "lesson-review", "coordinator")
+        # 기록 없는 G1·G2는 생략을 명시하지 않으면 연쇄 문제
+        self.assertEqual(self.verify("G5", "--materials", "worksheets")[0], 5)
+        code, out = self.verify("G5", "--materials", "worksheets", "--skip", "G1,G2")
+        self.assertEqual(code, 0, out)
+        self.assertIn("생략", out)
+        self.assertEqual(self.verify("G5", "--skip", "G9")[0], 2)
+
     def test_g4_spec_hash_differs_from_frozen_g3(self):
         self.chain("G2")
         for m in MATERIALS:
